@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import {
   CaretSortIcon,
@@ -39,8 +37,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Minus, Plus } from "lucide-react";
-import { getProdutos } from "@/services/produtosAPI";
+import { Minus } from "lucide-react";
+import { useProductContext } from "@/services/productContext";
+import { deleteProdutos, getProdutos } from "@/services/produtosAPI";
+import { DialogButton } from "./dialogButton";
+import { DialogEditButton } from "./dialogEditButton";
 
 export type Item = {
   _id: string;
@@ -50,130 +51,7 @@ export type Item = {
   medida: string;
 };
 
-export const columns: ColumnDef<Item>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "nome",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Produto
-          <CaretSortIcon className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="capitalize ml-4">{row.getValue("nome")}</div>
-    ),
-  },
-  {
-    accessorKey: "medida",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Medida
-          <CaretSortIcon className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="capitalize ml-4">{row.getValue("medida")}</div>
-    ),
-  },
-  {
-    accessorKey: "quantidade",
-    header: ({ column }) => {
-      return (
-        <div className="text-center">
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            QTD em estoque
-            <CaretSortIcon className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="text-center font-medium">
-        {row.getValue("quantidade")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "genero",
-    header: ({ column }) => {
-      return (
-        <div className="text-right">
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Gênero
-            <CaretSortIcon className="ml-2 h-4 w-" />
-          </Button>
-        </div>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="capitalize text-right mr-5">{row.getValue("genero")}</div>
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const produto = row.original;
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Abrir menu</span>
-              <DotsHorizontalIcon className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(produto._id)}
-            >
-              Copiar ID do produto
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Editar produto</DropdownMenuItem>
-            <DropdownMenuItem>Remover produto</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
 
 export function DataTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -183,7 +61,130 @@ export function DataTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [produto, setProduto] = React.useState<any[]>([]);
+  const { produtos, setProdutos } = useProductContext();
+
+  const columns: ColumnDef<Item>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "nome",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Produto
+            <CaretSortIcon className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize ml-4">{row.getValue("nome")}</div>
+      ),
+    },
+    {
+      accessorKey: "medida",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Medida
+            <CaretSortIcon className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize ml-4">{row.getValue("medida")}</div>
+      ),
+    },
+    {
+      accessorKey: "quantidade",
+      header: ({ column }) => {
+        return (
+          <div className="text-center">
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+              QTD em estoque
+              <CaretSortIcon className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="text-center font-medium">
+          {row.getValue("quantidade")}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "genero",
+      header: ({ column }) => {
+        return (
+          <div className="text-right">
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+              Gênero
+              <CaretSortIcon className="ml-2 h-4 w-" />
+            </Button>
+          </div>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="capitalize text-right mr-5">{row.getValue("genero")}</div>
+      ),
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const produto = row.original;
+        const idProduto = produto._id;
+  
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Abrir menu</span>
+                <DotsHorizontalIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {/* <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+                <DialogEditButton /> */}
+              <DropdownMenuItem
+                onClick={() => removeProduto(idProduto)}
+              >Remover produto</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
 
   React.useEffect(() => {
     fetchProdutos();
@@ -192,14 +193,19 @@ export function DataTable() {
   async function fetchProdutos() {
     try {
       const produtosDaAPI = await getProdutos();
-      setProduto(produtosDaAPI);
+      setProdutos(produtosDaAPI);
     } catch (error) {
       console.error("Erro ao buscar produtos da API", error);
     }
   }
 
+  async function removeProduto(id: string) {
+    await deleteProdutos(id);
+    await fetchProdutos();
+  }
+
   const table = useReactTable({
-    data: produto,
+    data: produtos,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -217,7 +223,6 @@ export function DataTable() {
     },
   });
 
-  console.log(produto);
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
@@ -230,10 +235,7 @@ export function DataTable() {
           className="max-w-sm"
         />
         <div className="px-6">
-          <Button size="lg" className="w-44 mr-2">
-            <Plus className="w-4 h-4 mr-2" />
-            Entrada
-          </Button>
+          <DialogButton />
           <Button size="lg" className="w-44">
             <Minus className="w-4 h-4 mr-2" />
             Saída
@@ -242,7 +244,7 @@ export function DataTable() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Relatórios <ChevronDownIcon className="ml-2 h-4 w-4" />
+              Colunas <ChevronDownIcon className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
