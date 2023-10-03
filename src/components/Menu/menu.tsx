@@ -1,13 +1,17 @@
-import { Button } from "./components/ui/button";
 import { MessageSquare } from "lucide-react";
-import { Separator } from "./components/ui/separator";
-import { DataTable } from "./components/dataTable";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
+import { Link } from "react-router-dom";
 
-export function App() {
+export function Menu() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <div className="px-6 py-3 flex items-center justify-between border-b">
-        <h1 className="text-xl font-bold">ControleStock</h1>
+        <h1 className="text-xl font-bold">
+          <Link to="/">
+          ControleStock
+          </Link>
+        </h1>
 
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted-foreground">
@@ -20,10 +24,6 @@ export function App() {
           </Button>
         </div>
       </div>
-
-      <main className="flex-1 p-10 flex gap-6">
-        <DataTable />
-      </main>
-    </div>
+    </>
   );
 }

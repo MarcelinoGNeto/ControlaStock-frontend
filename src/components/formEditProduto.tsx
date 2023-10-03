@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { getProdutos, postProdutos } from "@/services/produtosAPI";
-import { useProductContext } from "@/services/productContext";
+import { useProductContext } from "@/contexts/productContext";
 
 interface FormEditProdutoProps {
   closeModal: () => void;

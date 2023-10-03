@@ -11,6 +11,15 @@ async function getProdutos() {
   }
 }
 
+async function getProdutoPorId(id: string) {
+  try {
+    const response = await produtosAPI.get(`/produtos/${id}`);
+    return response.data;
+  }catch(error) {
+    throw error
+  }
+}
+
 async function postProdutos(data: object) {
   try {
     await produtosAPI.post(`/produtos`, data)
@@ -38,4 +47,4 @@ async function deleteProdutos(id: string) {
 }
 
 
-export { getProdutos, postProdutos, updateProdutos, deleteProdutos };
+export { getProdutos, postProdutos, updateProdutos, deleteProdutos, getProdutoPorId };

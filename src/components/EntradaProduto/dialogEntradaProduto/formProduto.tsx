@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { getProdutos, postProdutos } from "@/services/produtosAPI";
-import { useProductContext } from "@/services/productContext";
+import { useProductContext } from "@/contexts/productContext";
 
 interface FormProdutoProps {
   closeModal: () => void;
@@ -172,7 +172,7 @@ export function FormProduto({ closeModal }: FormProdutoProps) {
           />
         </div>
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Cadastrar</Button>
       </form>
     </Form>
   );

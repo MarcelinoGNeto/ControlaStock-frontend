@@ -1,8 +1,16 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
+interface IProdutos {
+  _id: string;
+  nome: string;
+  genero: string;
+  medida: string;
+  quantidade: number;
+}
+
 type ProductData = {
-  produtos: any[];
-  setProdutos: React.Dispatch<React.SetStateAction<any[]>>;
+  produtos: IProdutos[];
+  setProdutos: React.Dispatch<React.SetStateAction<IProdutos[]>>;
 };
 
 const ProductContext = createContext<ProductData | undefined>(undefined);
@@ -12,7 +20,7 @@ type ProductProviderProps = {
 };
 
 export const ProductProvider: React.FC<ProductProviderProps> = ({ children }) => {
-  const [produtos, setProdutos] = useState<any[]>([]);
+  const [produtos, setProdutos] = useState<IProdutos[]>([]);
 
   return (
     <ProductContext.Provider value={{ produtos, setProdutos }}>

@@ -5,12 +5,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
 import { FormProduto } from "./formProduto";
 import { useState } from "react"
 
 
-export function DialogButton() {
+export function DialogEntradaProduto() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const openModal = () => {
@@ -31,8 +30,7 @@ export function DialogButton() {
       h-10 rounded-md px-8
       "
       >
-        <Plus className="w-4 h-4 mr-2" />
-        Entrada
+        Novo Produto
       </DialogTrigger>
       {isModalOpen && (
       <DialogContent>

@@ -24,8 +24,6 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -37,11 +35,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Minus } from "lucide-react";
-import { useProductContext } from "@/services/productContext";
+import { useProductContext } from "@/contexts/productContext";
 import { deleteProdutos, getProdutos } from "@/services/produtosAPI";
-import { DialogButton } from "./dialogButton";
-import { DialogEditButton } from "./dialogEditButton";
+import { DialogEntradaProduto } from "./dialogEntradaProduto/dialogEntradaProduto";
 
 export type Item = {
   _id: string;
@@ -53,7 +49,7 @@ export type Item = {
 
 
 
-export function DataTable() {
+export function ProdutosTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -64,25 +60,6 @@ export function DataTable() {
   const { produtos, setProdutos } = useProductContext();
 
   const columns: ColumnDef<Item>[] = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected()}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       accessorKey: "nome",
       header: ({ column }) => {
@@ -138,25 +115,25 @@ export function DataTable() {
         </div>
       ),
     },
-    {
-      accessorKey: "genero",
-      header: ({ column }) => {
-        return (
-          <div className="text-right">
-            <Button
-              variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-              Gênero
-              <CaretSortIcon className="ml-2 h-4 w-" />
-            </Button>
-          </div>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="capitalize text-right mr-5">{row.getValue("genero")}</div>
-      ),
-    },
+    // {
+    //   accessorKey: "genero",
+    //   header: ({ column }) => {
+    //     return (
+    //       <div className="text-right">
+    //         <Button
+    //           variant="ghost"
+    //           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    //         >
+    //           Gênero
+    //           <CaretSortIcon className="ml-2 h-4 w-" />
+    //         </Button>
+    //       </div>
+    //     );
+    //   },
+    //   cell: ({ row }) => (
+    //     <div className="capitalize text-right mr-5">{row.getValue("genero")}</div>
+    //   ),
+    // },
     {
       id: "actions",
       enableHiding: false,
@@ -204,6 +181,10 @@ export function DataTable() {
     await fetchProdutos();
   }
 
+  const dadosProduto = (() => {
+      
+  })
+
   const table = useReactTable({
     data: produtos,
     columns,
@@ -234,39 +215,7 @@ export function DataTable() {
           }
           className="max-w-sm"
         />
-        <div className="px-6">
-          <DialogButton />
-          <Button size="lg" className="w-44">
-            <Minus className="w-4 h-4 mr-2" />
-            Saída
-          </Button>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Colunas <ChevronDownIcon className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        
       </div>
       <div className="rounded-md border">
         <Table>
@@ -320,8 +269,9 @@ export function DataTable() {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} de{" "}
-          {table.getFilteredRowModel().rows.length} item(s) seleccionado(s).
+        <div className="px-6">
+          <DialogEntradaProduto />
+        </div>
         </div>
         <div className="space-x-2">
           <Button
