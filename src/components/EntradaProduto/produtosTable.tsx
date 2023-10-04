@@ -1,7 +1,6 @@
 import * as React from "react";
 import {
   CaretSortIcon,
-  ChevronDownIcon,
   DotsHorizontalIcon,
 } from "@radix-ui/react-icons";
 import {
@@ -18,10 +17,8 @@ import {
 } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
@@ -46,8 +43,6 @@ export type Item = {
   nome: string;
   medida: string;
 };
-
-
 
 export function ProdutosTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -115,25 +110,6 @@ export function ProdutosTable() {
         </div>
       ),
     },
-    // {
-    //   accessorKey: "genero",
-    //   header: ({ column }) => {
-    //     return (
-    //       <div className="text-right">
-    //         <Button
-    //           variant="ghost"
-    //           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-    //         >
-    //           Gênero
-    //           <CaretSortIcon className="ml-2 h-4 w-" />
-    //         </Button>
-    //       </div>
-    //     );
-    //   },
-    //   cell: ({ row }) => (
-    //     <div className="capitalize text-right mr-5">{row.getValue("genero")}</div>
-    //   ),
-    // },
     {
       id: "actions",
       enableHiding: false,
@@ -150,9 +126,6 @@ export function ProdutosTable() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {/* <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-                <DialogEditButton /> */}
               <DropdownMenuItem
                 onClick={() => removeProduto(idProduto)}
               >Remover produto</DropdownMenuItem>
@@ -181,10 +154,6 @@ export function ProdutosTable() {
     await fetchProdutos();
   }
 
-  const dadosProduto = (() => {
-      
-  })
-
   const table = useReactTable({
     data: produtos,
     columns,
@@ -205,7 +174,7 @@ export function ProdutosTable() {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-90">
       <div className="flex items-center py-4">
         <Input
           placeholder="Filtrar por produtos..."

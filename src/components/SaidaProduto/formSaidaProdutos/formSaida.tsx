@@ -1,5 +1,3 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
@@ -27,13 +25,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { getSaidas, postSaidas } from "@/services/saidasAPI";
+import { getSaidas } from "@/services/saidasAPI";
 import { useSaidaContext } from "@/contexts/saidaContext";
 import { Input } from "@/components/ui/input";
-import React, { useState } from "react";
+import React from "react";
 import { getProdutoPorId, getProdutos } from "@/services/produtosAPI";
 import { useProductContext } from "@/contexts/productContext";
-import { ProdutosSaidaTable } from "./produtosSaidaTable";
 import { useProdutosSaidaContext } from "@/contexts/useProdutosSaidaContext";
 
 const FormSchema = z.object({
@@ -54,12 +51,11 @@ const FormSchema = z.object({
     .positive("Insira um valor maior que 0"),
 });
 
-
 export function FormSaida() {
   const { produtos, setProdutos } = useProductContext();
-  const { saidas, setSaidas } = useSaidaContext();
+  const { setSaidas } = useSaidaContext();
   const { dataProdutosSaida, setDataProdutosSaida } = useProdutosSaidaContext();
-  
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -69,14 +65,14 @@ export function FormSaida() {
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    //Inserir
+    //Inserir: função de ação ao clicar no botão "Inserir"
     // await postSaidas(data);
-    console.log("produto do formulario: ", data);
-
-    dataProdutosSaida.push(data)
+    setDataProdutosSaida((prevData) => [...prevData, data]);
+    dataProdutosSaida.push(data);
 
     console.log("dataProdutosSaida: ", dataProdutosSaida);
 
+    //Consulta de Produto original no banco
     const produtoDaAPI = await getProdutoPorId(data._id);
     console.log("Produto do banco: ", produtoDaAPI);
 
@@ -99,7 +95,7 @@ export function FormSaida() {
       console.log("Erro ao buscar saída da API ", error);
     }
   }
- 
+
   async function fetchProdutos() {
     try {
       const produtosDaAPI = await getProdutos();
@@ -110,9 +106,8 @@ export function FormSaida() {
   }
 
   return (
-    <>
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mb-5">
         <FormField
           control={form.control}
           name="nome"
@@ -175,25 +170,27 @@ export function FormSaida() {
               </Popover>
               <FormMessage />
               <FormField
-          control={form.control}
-          name="quantidade"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>QTD</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="quantidade" {...field} />
-              </FormControl>
-              <FormMessage />
+                control={form.control}
+                name="quantidade"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>QTD</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="quantidade"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </FormItem>
           )}
         />
-            </FormItem>
-          )}
-        />        
         <Button type="submit">Inserir</Button>
       </form>
     </Form>
-    <ProdutosSaidaTable dados={dataProdutosSaida} />
-    </>
   );
 }
