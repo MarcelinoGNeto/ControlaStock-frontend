@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 
 import { cn } from "@/lib/utils";
@@ -15,24 +15,18 @@ export function NavMenu() {
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <Link to="/">
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              <div className="text-lg font-bold">HOME</div>
-            </NavigationMenuLink>
+          <Link to="/" className={navigationMenuTriggerStyle()}>
+            <div className="text-lg font-bold">HOME</div>
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link to="/estoque">
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              ESTOQUE
-            </NavigationMenuLink>
+          <Link to="/estoque" className={navigationMenuTriggerStyle()}>
+            ESTOQUE
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link to="/saidas">
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              SAÍDA
-            </NavigationMenuLink>
+          <Link to="/saidas" className={navigationMenuTriggerStyle()}>
+            SAÍDA
           </Link>
         </NavigationMenuItem>
       </NavigationMenuList>
