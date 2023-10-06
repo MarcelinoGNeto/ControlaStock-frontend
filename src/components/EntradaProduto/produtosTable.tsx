@@ -174,7 +174,13 @@ export function ProdutosTable() {
   });
 
   return (
-    <div className="w-90">
+    <div className="w-3/4 h-full px-6 rounded-xl border bg-card text-card-foreground shadow">
+      <div className="flex flex-col space-y-1.5 py-4">
+        <div className="font-semibold leading-none tracking-tight">Mantenha seu estoque sempre atualizado!</div>
+        <div className="text-sm text-muted-foreground">
+          Abaixo você pode pesquisar, cadastrar e remover produtos do estoque
+        </div>
+      </div>
       <div className="flex items-center py-4">
         <Input
           placeholder="Filtrar por produtos..."

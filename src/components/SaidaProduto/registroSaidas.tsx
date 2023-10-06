@@ -1,14 +1,11 @@
 import { FormSaida } from "@/components/SaidaProduto/formSaidaProdutos/formSaida";
 import { ProdutosSaidaTable } from "./formSaidaProdutos/produtosSaidaTable";
 import { SelecionaDestinatario } from "./formSaidaProdutos/selecionaDestinatario";
-import { useProdutosSaidaContext } from "@/contexts/useProdutosSaidaContext";
-
 
 export function RegistroSaidas() {
-  const { dataProdutosSaida } = useProdutosSaidaContext();
 
   return (
-    <div className="rounded-xl border bg-card text-card-foreground shadow">
+    <div className="w-3/4 h-full rounded-xl border bg-card text-card-foreground shadow">
       <div className="flex flex-col space-y-1.5 p-6">
         <div className="font-semibold leading-none tracking-tight">Registar saída</div>
         <div className="text-sm text-muted-foreground">

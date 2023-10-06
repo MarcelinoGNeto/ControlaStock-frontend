@@ -1,5 +1,3 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
@@ -17,6 +15,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -27,6 +26,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useProdutosSaidaContext } from "@/contexts/useProdutosSaidaContext";
+import { postSaidas } from "@/services/saidasAPI";
 
 const destinatarios = [
   { label: "CRAS", value: "CRAS" },
@@ -38,24 +39,30 @@ const destinatarios = [
   { label: "OUTRO", value: "OUTRO" },
 ] as const;
 
+const FormSchema = z.object({
+  destinatario: z.string().min(2, {
+    message: "Escolha um destinatário na lista, ou marque a opção (Outro).",
+  }),
+});
+
 export function SelecionaDestinatario() {
-  const FormSchema = z.object({
-    _id: z.string(),
-    destinatario: z.string({
-      required_error: "Escolha um destinatário",
-    }),
-    //produtos: z.string().array(),
-  });
+  const { dataProdutosSaida, setDataProdutosSaida } = useProdutosSaidaContext();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      destinatario: "",
-    },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("clicou: ", data);
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+
+    const saidaProdutos = {
+      destinatario: data.destinatario,
+      produtos: dataProdutosSaida,
+    }
+
+    await postSaidas(saidaProdutos);
+    
+    console.log("saidaProdutos: ",saidaProdutos)
+
     form.reset();
   }
 
@@ -81,7 +88,7 @@ export function SelecionaDestinatario() {
                     >
                       {field.value
                         ? destinatarios.find(
-                            (destinatario) => destinatario.value === field.value
+                            (language) => language.value === field.value
                           )?.label
                         : "Selecione..."}
                       <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -91,24 +98,24 @@ export function SelecionaDestinatario() {
                 <PopoverContent className="w-[200px] p-0">
                   <Command>
                     <CommandInput
-                      placeholder="Digite um destinatário"
+                      placeholder="Digite um nome..."
                       className="h-9"
                     />
-                    <CommandEmpty>Não encontrado</CommandEmpty>
+                    <CommandEmpty>Não encontrado.</CommandEmpty>
                     <CommandGroup>
-                      {destinatarios.map((destinatario) => (
+                      {destinatarios.map((entidade) => (
                         <CommandItem
-                          value={destinatario.label}
-                          key={destinatario.value}
+                          value={entidade.label}
+                          key={entidade.value}
                           onSelect={() => {
-                            form.setValue("destinatario", destinatario.value);
+                            form.setValue("destinatario", entidade.value);
                           }}
                         >
-                          {destinatario.label}
+                          {entidade.label}
                           <CheckIcon
                             className={cn(
                               "ml-auto h-4 w-4",
-                              destinatario.value === field.value
+                              entidade.value === field.value
                                 ? "opacity-100"
                                 : "opacity-0"
                             )}
@@ -120,12 +127,15 @@ export function SelecionaDestinatario() {
                 </PopoverContent>
               </Popover>
               <FormMessage />
+              <FormDescription>
+                Escolha uma entidade para enviar os produtos e clique em
+                "Registrar".
+              </FormDescription>
             </FormItem>
           )}
         />
-
         <div className="flex justify-end">
-          <Button type="submit">Submeter</Button>
+          <Button type="submit">Registrar</Button>
         </div>
       </form>
     </Form>

@@ -60,7 +60,6 @@ export function FormProduto({ closeModal }: FormProdutoProps) {
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     await postProdutos(data);
-    console.log("data: ", data);
 
     const newProdutos = await getProdutos();
     setProdutos(newProdutos);

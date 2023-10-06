@@ -95,7 +95,7 @@ export function ProdutosSaidaTable() {
                 column.toggleSorting(column.getIsSorted() === "asc")
               }
             >
-              QTD em estoque
+              QTD
               <CaretSortIcon className="ml-2 h-4 w-4" />
             </Button>
           </div>

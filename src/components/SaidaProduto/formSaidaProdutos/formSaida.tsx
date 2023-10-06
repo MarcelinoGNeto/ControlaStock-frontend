@@ -64,12 +64,22 @@ export function FormSaida() {
     },
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    //Inserir: função de ação ao clicar no botão "Inserir"
-    // await postSaidas(data);
-    setDataProdutosSaida((prevData) => [...prevData, data]);
-    dataProdutosSaida.push(data);
+  function validaRegistroSaida(data: z.infer<typeof FormSchema>) {
+    const produtoExistente = dataProdutosSaida.find(
+      (produto) => produto._id === data._id
+    );
 
+    if (produtoExistente) {
+      console.log(`O produto ${produtoExistente.nome} já está na lista`);
+    } else {
+      setDataProdutosSaida((prevData) => [...prevData, data]);
+      dataProdutosSaida.push(data);
+    }
+  }
+
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+
+    validaRegistroSaida(data);
     console.log("dataProdutosSaida: ", dataProdutosSaida);
 
     //Consulta de Produto original no banco

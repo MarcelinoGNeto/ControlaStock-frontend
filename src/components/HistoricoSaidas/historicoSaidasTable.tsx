@@ -2,6 +2,7 @@ import * as React from "react";
 import {
   CaretSortIcon,
   DotsHorizontalIcon,
+  FileTextIcon,
 } from "@radix-ui/react-icons";
 import {
   ColumnDef,
@@ -36,6 +37,9 @@ import {
 import { deleteSaidas, getSaidas } from "@/services/saidasAPI";
 import { useSaidaContext } from "@/contexts/saidaContext";
 import { Link } from "react-router-dom";
+import moment from 'moment';
+import 'moment/locale/pt-br';
+import { saidasPDF } from "../Reports/saidaPDF";
 
 export type Item = {
   _id: string;
@@ -44,7 +48,7 @@ export type Item = {
   produtos: [];
 };
 
-export function SaidasTable() {
+export function HistoricoSaidasTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -80,14 +84,17 @@ export function SaidasTable() {
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Data
+            Data do Registro
             <CaretSortIcon className="ml-2 h-4 w-4" />
           </Button>
         );
       },
-      cell: ({ row }) => (
-        <div className="capitalize ml-4">{row.getValue("criadoEm")}</div>
-      ),
+      cell: ({ row }) => {
+        const criadoEm = moment(row.getValue("criadoEm"));
+        const formattedDate = criadoEm.format('DD/MM/YYYY - H:mm:ss');
+        
+        return <div className="capitalize ml-4">{formattedDate}</div>;
+      },
     },
     {
       id: "actions",
@@ -107,7 +114,13 @@ export function SaidasTable() {
             <DropdownMenuContent align="end">
               <DropdownMenuItem
                 onClick={() => removeSaida(idSaida)}
-              >Remover saida</DropdownMenuItem>
+              >Remover</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {}}
+              >Editar</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => saidasPDF(saida)}
+              >Imprimir</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -153,7 +166,13 @@ export function SaidasTable() {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-3/4 h-full px-5 rounded-xl border bg-card text-card-foreground shadow">
+      <div className="flex flex-col space-y-1.5 py-4">
+        <div className="font-semibold leading-none tracking-tight">O histórico das saídas estão aqui.</div>
+        <div className="text-sm text-muted-foreground">
+          Digite abaixo o nome de uma entidade, ou cadastre uma nova saída.
+        </div>
+      </div>
       <div className="flex items-center py-4">
         <Input
           placeholder="Destinatário"
@@ -164,19 +183,14 @@ export function SaidasTable() {
           className="max-w-sm"
         />
         <div className="px-6">
-          {/* <DialogSaidaProduto /> */}
-          <Button 
-            size="lg" 
-            className="w-44"  
-            onClick={() => {
-              console.log("clicou")
-            }}
-          >
-            <Link to="/saidas">
-            
+          <Button variant="default">
+
+            <Link to="/saidas" className="flex items-center m-1 ">
+              <FileTextIcon className="w-5 h-4 mr-2"/>            
               Nova Saída
             </Link>
           </Button>
+          
         </div>
         <DropdownMenu>
           <DropdownMenuContent align="end">
