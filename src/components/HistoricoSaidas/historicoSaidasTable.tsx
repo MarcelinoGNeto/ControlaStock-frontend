@@ -183,13 +183,16 @@ export function HistoricoSaidasTable() {
           className="max-w-sm"
         />
         <div className="px-6">
-          <Button variant="default">
+          {/* <Button variant="default"> */}
 
-            <Link to="/saidas" className="flex items-center m-1 ">
-              <FileTextIcon className="w-5 h-4 mr-2"/>            
+            <Link to="/saidas" className="
+            inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50
+            m-1 bg-primary text-primary-foreground shadow hover:bg-primary/90
+            h-9 px-4 py-2">
               Nova Saída
+              <FileTextIcon className="w-5 h-5 ml-2"/>            
             </Link>
-          </Button>
+          {/* </Button> */}
           
         </div>
         <DropdownMenu>

@@ -28,10 +28,9 @@ async function postProdutos(data: object) {
   }
 }
 
-async function updateProdutos(id: string) {
+async function updateProdutos(id: string, data: object) {
   try {
-    await produtosAPI.put(`/produtos/${id}`)
-    //await getProdutos();
+    await produtosAPI.put(`/produtos/${id}`, data)
   }catch(error) {
     throw error
   }

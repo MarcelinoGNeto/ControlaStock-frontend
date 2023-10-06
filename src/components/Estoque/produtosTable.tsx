@@ -1,7 +1,5 @@
 import * as React from "react";
-import {
-  CaretSortIcon,
-} from "@radix-ui/react-icons";
+import { CaretSortIcon } from "@radix-ui/react-icons";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -29,6 +27,7 @@ import { useProductContext } from "@/contexts/productContext";
 import { deleteProdutos, getProdutos } from "@/services/produtosAPI";
 import { DialogEntradaProduto } from "./dialogEntradaProduto/dialogEntradaProduto";
 import { DialogEditaProduto } from "./dialogEditaProduto/dialogEditaProduto";
+import { AlertDialogRemove } from "./dialogEditaProduto/alertDialogRemove";
 
 export type Item = {
   _id: string;
@@ -90,7 +89,9 @@ export function ProdutosTable() {
           <div className="text-center">
             <Button
               variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
             >
               QTD em estoque
               <CaretSortIcon className="ml-2 h-4 w-4" />
@@ -105,20 +106,38 @@ export function ProdutosTable() {
       ),
     },
     {
+      accessorKey: "genero",
+      header: ({ column }) => {
+        return (
+          <div className="text-center">
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Gênero
+              <CaretSortIcon className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="text-center font-medium">{row.getValue("genero")}</div>
+      ),
+    },
+    {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
         const produto = row.original;
         const idProduto = produto._id;
-  
+
         return (
-          <>
-            <Button
-              onClick={() => removeProduto(idProduto)}
-            >Remover
-            </Button>
-            <DialogEditaProduto id={idProduto}  />
-          </>
+          <div>
+            <DialogEditaProduto id={idProduto} refreshTable={atualizaTabela} />
+            <AlertDialogRemove removeProduct={() => removeProduto(idProduto)} />
+          </div>
         );
       },
     },
@@ -140,7 +159,10 @@ export function ProdutosTable() {
   async function removeProduto(id: string) {
     await deleteProdutos(id);
     await fetchProdutos();
-  
+  }
+
+  async function atualizaTabela() {
+    await fetchProdutos();
   }
 
   const table = useReactTable({
@@ -165,7 +187,9 @@ export function ProdutosTable() {
   return (
     <div className="w-3/4 h-full px-6 rounded-xl border bg-card text-card-foreground shadow">
       <div className="flex flex-col space-y-1.5 py-4">
-        <div className="font-semibold leading-none tracking-tight">Mantenha seu estoque sempre atualizado!</div>
+        <div className="font-semibold leading-none tracking-tight">
+          Mantenha seu estoque sempre atualizado!
+        </div>
         <div className="text-sm text-muted-foreground">
           Abaixo você pode pesquisar, cadastrar e remover produtos do estoque
         </div>
@@ -179,7 +203,11 @@ export function ProdutosTable() {
           }
           className="max-w-sm"
         />
-        
+        <div className="flex-1 text-sm text-muted-foreground">
+          <div className="px-6">
+            <DialogEntradaProduto />
+          </div>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -232,11 +260,11 @@ export function ProdutosTable() {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-        <div className="px-6">
-          <DialogEntradaProduto />
-        </div>
-        </div>
+        {/* <div className="flex-1 text-sm text-muted-foreground">
+          <div className="px-6">
+            <DialogEntradaProduto />
+          </div>
+        </div> */}
         <div className="space-x-2">
           <Button
             variant="outline"
