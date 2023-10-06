@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { Link } from "react-router-dom";
 
@@ -24,9 +22,9 @@ export function NavMenu() {
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link to="/produtos">
+          <Link to="/estoque">
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              PRODUTOS
+              ESTOQUE
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>

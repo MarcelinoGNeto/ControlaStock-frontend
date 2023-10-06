@@ -1,7 +1,6 @@
 import * as React from "react";
 import {
   CaretSortIcon,
-  DotsHorizontalIcon,
 } from "@radix-ui/react-icons";
 import {
   ColumnDef,
@@ -17,12 +16,6 @@ import {
 } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -35,6 +28,7 @@ import {
 import { useProductContext } from "@/contexts/productContext";
 import { deleteProdutos, getProdutos } from "@/services/produtosAPI";
 import { DialogEntradaProduto } from "./dialogEntradaProduto/dialogEntradaProduto";
+import { DialogEditaProduto } from "./dialogEditaProduto/dialogEditaProduto";
 
 export type Item = {
   _id: string;
@@ -118,19 +112,13 @@ export function ProdutosTable() {
         const idProduto = produto._id;
   
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Abrir menu</span>
-                <DotsHorizontalIcon className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => removeProduto(idProduto)}
-              >Remover produto</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <>
+            <Button
+              onClick={() => removeProduto(idProduto)}
+            >Remover
+            </Button>
+            <DialogEditaProduto id={idProduto}  />
+          </>
         );
       },
     },
@@ -152,6 +140,7 @@ export function ProdutosTable() {
   async function removeProduto(id: string) {
     await deleteProdutos(id);
     await fetchProdutos();
+  
   }
 
   const table = useReactTable({

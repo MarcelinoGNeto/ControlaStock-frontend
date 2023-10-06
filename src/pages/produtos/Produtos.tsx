@@ -1,4 +1,4 @@
-import { ProdutosTable } from "@/components/EntradaProduto/produtosTable";
+import { ProdutosTable } from "@/components/Estoque/produtosTable";
 
 export function Produtos() {
   return (
