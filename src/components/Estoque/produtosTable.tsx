@@ -27,7 +27,7 @@ import { useProductContext } from "@/contexts/productContext";
 import { deleteProdutos, getProdutos } from "@/services/produtosAPI";
 import { DialogEntradaProduto } from "./dialogEntradaProduto/dialogEntradaProduto";
 import { DialogEditaProduto } from "./dialogEditaProduto/dialogEditaProduto";
-import { AlertDialogRemove } from "./dialogEditaProduto/alertDialogRemove";
+import { AlertDialogRemove } from "../Alerts/alertDialogRemove";
 
 export type Item = {
   _id: string;
@@ -129,14 +129,15 @@ export function ProdutosTable() {
     {
       id: "actions",
       enableHiding: false,
+      header: () => <div className="flex justify-center"><p>Editar | Remover</p></div>,
       cell: ({ row }) => {
         const produto = row.original;
         const idProduto = produto._id;
 
         return (
-          <div>
+          <div className="flex justify-center">
             <DialogEditaProduto id={idProduto} refreshTable={atualizaTabela} />
-            <AlertDialogRemove removeProduct={() => removeProduto(idProduto)} />
+            <AlertDialogRemove title="" removeProduct={() => removeProduto(idProduto)} />
           </div>
         );
       },

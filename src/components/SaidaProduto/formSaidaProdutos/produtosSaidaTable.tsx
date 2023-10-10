@@ -23,7 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useProdutosSaidaContext } from "@/contexts/useProdutosSaidaContext";
-import { AlertDialogRemove } from "@/components/Estoque/dialogEditaProduto/alertDialogRemove";
+import { AlertDialogRemove } from "@/components/Alerts/alertDialogRemove";
 import { getProdutoPorId, updateProdutos } from "@/services/produtosAPI";
 
 export type Item = {
@@ -128,15 +128,22 @@ export function ProdutosSaidaTable() {
     {
       id: "actions",
       enableHiding: false,
+      header: () => (
+        <div className="flex justify-center">
+          <p>Remover</p>
+        </div>
+      ),
       cell: ({ row }) => {
         const produto = row.original;
         const idProduto = produto._id;
         const produtoQtd = produto.quantidade;
 
         return (
-          <AlertDialogRemove
-            removeProduct={() => removeProduto(idProduto, produtoQtd)}
-          />
+          <div className="flex justify-center">
+            <AlertDialogRemove
+              removeProduct={() => removeProduto(idProduto, produtoQtd)}
+            />
+          </div>
         );
       },
     },

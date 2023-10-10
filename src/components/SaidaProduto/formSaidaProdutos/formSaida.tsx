@@ -136,7 +136,6 @@ export function FormSaida() {
   React.useEffect(() => {
     fetchSaidas();
     fetchProdutos();
-    console.log("produtos: ", produtos);
   }, []);
 
   async function fetchSaidas() {

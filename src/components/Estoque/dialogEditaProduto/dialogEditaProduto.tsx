@@ -30,13 +30,11 @@ export function DialogEditaProduto(props: DialogEditaProdutoProps) {
     <Dialog>
       <DialogTrigger onClick={openModal}
         className="
-      inline-flex items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50
-      w-36 mr-4
-      bg-emerald-400 text-primary-foreground shadow hover:bg-primary/90
-      h-10 rounded-md px-8
-      "
+      inline-flex items-center justify-center text-sm font-medium transition-colors 
+      focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring 
+      disabled:pointer-events-none disabled:opacity-50
+      px-2 mx-2 bg-emerald-400 text-primary-foreground shadow hover:bg-primary/90 rounded-md      "
       >
-        Editar
         <UpdateIcon className="w-5 h-5 m-2"/>
       </DialogTrigger>
       {isModalOpen && (

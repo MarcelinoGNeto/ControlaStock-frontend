@@ -14,25 +14,28 @@ import { TrashIcon } from "@radix-ui/react-icons";
 
   interface IRemove {
     removeProduct: any;
+    title?: string;
+    contentTitle?: string;
+    contentDescription?: string;
   }
   
-  export function AlertDialogRemove({removeProduct}: IRemove) {
+  export function AlertDialogRemove({removeProduct, title, contentTitle, contentDescription}: IRemove) {
     return (
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button 
             variant="destructive"
-            className="inline-flex items-center justify-center w-36 h-10"
+            className="inline-flex items-center justify-center w-auto mx-2"
             >
-            Remover
-            <TrashIcon className="w-5 h-5 m-2"/>
+            { title }
+            <TrashIcon className="w-5 h-5"/>
             </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Você tem certeza que deseja remover o produto?</AlertDialogTitle>
+            <AlertDialogTitle>{contentTitle ? contentTitle : "Você tem certeza que deseja remover o item?"}</AlertDialogTitle>
             <AlertDialogDescription>
-              Ao clicar em "Sim" o produto será removido permanentemente, mas poderá acrescentar novos.
+              {contentDescription ? contentDescription : `Ao clicar em "Sim" o item será removido permanentemente, mas poderá acrescentar novos.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

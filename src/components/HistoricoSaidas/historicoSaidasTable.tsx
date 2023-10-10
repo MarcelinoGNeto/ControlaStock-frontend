@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   CaretSortIcon,
-  DotsHorizontalIcon,
+  DownloadIcon,
   FileTextIcon,
 } from "@radix-ui/react-icons";
 import {
@@ -22,8 +22,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
@@ -37,15 +35,17 @@ import {
 import { deleteSaidas, getSaidas } from "@/services/saidasAPI";
 import { useSaidaContext } from "@/contexts/saidaContext";
 import { Link } from "react-router-dom";
-import moment from 'moment';
-import 'moment/locale/pt-br';
+import moment from "moment";
+import "moment/locale/pt-br";
 import { saidasPDF } from "../Reports/saidaPDF";
+import { AlertDialogRemove } from "../Alerts/alertDialogRemove";
 
 export type Item = {
   _id: string;
   destinatario: string;
   criadoEm: Date;
   produtos: [];
+  actions: string;
 };
 
 export function HistoricoSaidasTable() {
@@ -91,38 +91,29 @@ export function HistoricoSaidasTable() {
       },
       cell: ({ row }) => {
         const criadoEm = moment(row.getValue("criadoEm"));
-        const formattedDate = criadoEm.format('DD/MM/YYYY - H:mm:ss');
-        
+        const formattedDate = criadoEm.format("DD/MM/YYYY - H:mm:ss");
+
         return <div className="capitalize ml-4">{formattedDate}</div>;
       },
     },
     {
       id: "actions",
       enableHiding: false,
+      header: () => <div className="flex justify-center"><p>Baixar | Remover</p></div>,
       cell: ({ row }) => {
         const saida = row.original;
         const idSaida = saida._id;
-  
+
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Abrir menu</span>
-                <DotsHorizontalIcon className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => removeSaida(idSaida)}
-              >Remover</DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {}}
-              >Editar</DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => saidasPDF(saida)}
-              >Imprimir</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex justify-center">
+            <Button className="bg-amber-500 mx-2" onClick={() => saidasPDF(saida)}>
+              <DownloadIcon className="w-5 h-5" />
+            </Button>
+            <AlertDialogRemove
+              title=""
+              removeProduct={() => removeSaida(idSaida)}
+            />
+          </div>
         );
       },
     },
@@ -168,7 +159,9 @@ export function HistoricoSaidasTable() {
   return (
     <div className="w-3/4 h-full px-5 rounded-xl border bg-card text-card-foreground shadow">
       <div className="flex flex-col space-y-1.5 py-4">
-        <div className="font-semibold leading-none tracking-tight">O histórico das saídas estão aqui.</div>
+        <div className="font-semibold leading-none tracking-tight">
+          O histórico das saídas estão aqui.
+        </div>
         <div className="text-sm text-muted-foreground">
           Digite abaixo o nome de uma entidade, ou cadastre uma nova saída.
         </div>
@@ -176,7 +169,9 @@ export function HistoricoSaidasTable() {
       <div className="flex items-center py-4">
         <Input
           placeholder="Destinatário"
-          value={(table.getColumn("destinatario")?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn("destinatario")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
             table.getColumn("destinatario")?.setFilterValue(event.target.value)
           }
@@ -185,15 +180,17 @@ export function HistoricoSaidasTable() {
         <div className="px-6">
           {/* <Button variant="default"> */}
 
-            <Link to="/saidas" className="
+          <Link
+            to="/saidas"
+            className="
             inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50
             m-1 bg-primary text-primary-foreground shadow hover:bg-primary/90
-            h-9 px-4 py-2">
-              Nova Saída
-              <FileTextIcon className="w-5 h-5 ml-2"/>            
-            </Link>
+            h-9 px-4 py-2"
+          >
+            Nova Saída
+            <FileTextIcon className="w-5 h-5 ml-2" />
+          </Link>
           {/* </Button> */}
-          
         </div>
         <DropdownMenu>
           <DropdownMenuContent align="end">

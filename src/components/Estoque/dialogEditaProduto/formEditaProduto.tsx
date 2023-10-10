@@ -206,8 +206,7 @@ export function FormEditaProduto({ closeModal, id, refreshModal }: IFormProdutoP
                 <FormItem>
                   <FormLabel>QTD</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="quantidade" {...field} 
-                    //defaultValue={produto?.quantidade || 0}
+                    <Input type="number" placeholder="quantidade" {...field}
                     />
                   </FormControl>
                   <FormMessage />
