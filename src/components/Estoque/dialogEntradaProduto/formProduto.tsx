@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { getProdutos, postProdutos } from "@/services/produtosAPI";
 import { useProductContext } from "@/contexts/productContext";
+import { AlertSuccess } from "@/components/Alerts/alertSuccess";
 
 interface FormProdutoProps {
   closeModal: () => void;
@@ -49,6 +50,7 @@ const formSchema = z.object({
 
 export function FormProduto({ closeModal }: FormProdutoProps) {
   const { setProdutos } = useProductContext();
+  const [alertUpdate, setAlertUpdate] = React.useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,12 +66,17 @@ export function FormProduto({ closeModal }: FormProdutoProps) {
     const newProdutos = await getProdutos();
     setProdutos(newProdutos);
 
+    setAlertUpdate(true);
+
     form.reset();
   }
 
   useEffect(() => {
     if (form.formState.isSubmitSuccessful) {
-      closeModal();
+      setTimeout(() => {
+        setAlertUpdate(false);
+        closeModal();
+      }, 2000);
     }
   }, [form.formState.isSubmitSuccessful, closeModal]);
 
@@ -172,6 +179,12 @@ export function FormProduto({ closeModal }: FormProdutoProps) {
         </div>
 
         <Button type="submit">Cadastrar</Button>
+        {alertUpdate ? (
+            <AlertSuccess
+              title="Sucesso!"
+              description="O produto foi cadastrado com sucesso."
+            />
+          ) : null}
       </form>
     </Form>
   );

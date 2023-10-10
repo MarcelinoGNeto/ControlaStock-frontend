@@ -121,12 +121,8 @@ export function FormSaida() {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     const resultadoValidacao = validaRegistroSaida(data);
 
-    console.log("resultadoValidacao: ", resultadoValidacao);
-
     if (resultadoValidacao && resultadoValidacao !== undefined) {
       validaRegistroSaida(data);
-
-      console.log("dataProdutosSaida: ", dataProdutosSaida);
     }
 
     setSelectProduto(null);
@@ -143,7 +139,7 @@ export function FormSaida() {
       const saidasDaApi = await getSaidas();
       setSaidas(saidasDaApi);
     } catch (error) {
-      console.log("Erro ao buscar saída da API ", error);
+      console.error("Erro ao buscar saída da API ", error);
     }
   }
 
@@ -208,7 +204,6 @@ export function FormSaida() {
                                 form.setValue("nome", produto.nome);
                                 form.setValue("genero", produto.genero);
                                 form.setValue("medida", produto.medida);
-                                console.log("id: ", produto._id);
                                 setSelectProduto(produto);
                               }}
                             >

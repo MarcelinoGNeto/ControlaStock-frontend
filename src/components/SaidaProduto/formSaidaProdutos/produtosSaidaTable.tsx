@@ -170,14 +170,6 @@ export function ProdutosSaidaTable() {
       produtoById.quantidade,
       produtoQtd
     );
-    console.log(
-      "id: ",
-      idProduto,
-      " quantidadeProdutoBD: ",
-      produtoById.quantidade,
-      " produtoQtd: ",
-      produtoQtd
-    );
   }
 
   const atualizaQuantidadeProdutoBanco = (

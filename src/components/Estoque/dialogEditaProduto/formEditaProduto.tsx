@@ -56,9 +56,13 @@ const formSchema = z.object({
     .positive("Insira um valor maior que 0"),
 });
 
-export function FormEditaProduto({ closeModal, id, refreshModal }: IFormProdutoProps) {
+export function FormEditaProduto({
+  closeModal,
+  id,
+  refreshModal,
+}: IFormProdutoProps) {
   const [produto, setProduto] = React.useState<IProduto | null>(null);
-  const [alertUpdate, setAlertUpdate] = React.useState(false)
+  const [alertUpdate, setAlertUpdate] = React.useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,7 +76,6 @@ export function FormEditaProduto({ closeModal, id, refreshModal }: IFormProdutoP
     const produtoById = await getProdutoPorId(id);
     updateProduto(produtoById._id, data);
     setAlertUpdate(true);
-
   }
 
   async function getProductById(id: string) {
@@ -89,7 +92,7 @@ export function FormEditaProduto({ closeModal, id, refreshModal }: IFormProdutoP
   async function updateProduto(id: string, data: z.infer<typeof formSchema>) {
     try {
       await updateProdutos(id, data);
-    }catch(error) {
+    } catch (error) {
       console.error("Erro ao atualizar produto: ", error);
     }
   }
@@ -98,14 +101,12 @@ export function FormEditaProduto({ closeModal, id, refreshModal }: IFormProdutoP
     getProductById(id);
 
     if (form.formState.isSubmitSuccessful) {
-
       setTimeout(() => {
         setAlertUpdate(false);
 
         closeModal();
         refreshModal();
       }, 2000);
-      
     }
   }, [id, form.formState.isSubmitSuccessful, closeModal]);
 
@@ -120,10 +121,7 @@ export function FormEditaProduto({ closeModal, id, refreshModal }: IFormProdutoP
               <FormItem>
                 <FormLabel>Produto</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Escreva o nome do produto"
-                    {...field}
-                  />
+                  <Input placeholder="Escreva o nome do produto" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -206,8 +204,7 @@ export function FormEditaProduto({ closeModal, id, refreshModal }: IFormProdutoP
                 <FormItem>
                   <FormLabel>QTD</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="quantidade" {...field}
-                    />
+                    <Input type="number" placeholder="quantidade" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -216,7 +213,12 @@ export function FormEditaProduto({ closeModal, id, refreshModal }: IFormProdutoP
           </div>
 
           <Button type="submit">Atualizar</Button>
-          {alertUpdate ? <AlertSuccess title="Sucesso!" description="O produto foi atualizado com sucesso." /> : null}
+          {alertUpdate ? (
+            <AlertSuccess
+              title="Sucesso!"
+              description="O produto foi atualizado com sucesso."
+            />
+          ) : null}
         </form>
       ) : (
         <p>carregando...</p>
