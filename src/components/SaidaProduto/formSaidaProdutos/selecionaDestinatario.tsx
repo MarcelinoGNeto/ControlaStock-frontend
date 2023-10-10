@@ -1,5 +1,6 @@
+import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { CaretSortIcon, CheckIcon, RocketIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -28,6 +29,9 @@ import {
 } from "@/components/ui/popover";
 import { useProdutosSaidaContext } from "@/contexts/useProdutosSaidaContext";
 import { postSaidas } from "@/services/saidasAPI";
+import { useAlertaProdutoContext } from "@/contexts/useAlertaProdutoContext";
+import { useAlertaQtdProdutoContext } from "@/contexts/useAlertaQtdProdutoContext";
+import { AlertSuccess } from "../../Alerts/alertSuccess";
 
 const destinatarios = [
   { label: "CRAS", value: "CRAS" },
@@ -46,24 +50,33 @@ const FormSchema = z.object({
 });
 
 export function SelecionaDestinatario() {
-  const { dataProdutosSaida, setDataProdutosSaida } = useProdutosSaidaContext();
+  const { dataProdutosSaida } = useProdutosSaidaContext();
+  const { setDataProdutosSaida } = useProdutosSaidaContext();
+  const { setAlertaProdutoSelecionado } = useAlertaProdutoContext();
+  const { setAlertaQtdProdutoSelecionado } = useAlertaQtdProdutoContext();
+  const [alertUpdate, setAlertUpdate] = React.useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-
     const saidaProdutos = {
       destinatario: data.destinatario,
       produtos: dataProdutosSaida,
-    }
+    };
 
     await postSaidas(saidaProdutos);
-    
-    console.log("saidaProdutos: ",saidaProdutos)
 
+    setDataProdutosSaida([]);
+    setAlertaProdutoSelecionado(false);
+    setAlertaQtdProdutoSelecionado(false);
     form.reset();
+
+    setAlertUpdate(true);
+    setTimeout(() => {
+      setAlertUpdate(false);
+    }, 3000);
   }
 
   return (
@@ -134,9 +147,18 @@ export function SelecionaDestinatario() {
             </FormItem>
           )}
         />
-        <div className="flex justify-end">
-          <Button type="submit">Registrar</Button>
+        <div className="flex ">
+          <Button type="submit">
+            Registrar
+            <RocketIcon className="ml-2 h-5 w-5" />
+          </Button>
         </div>
+        {alertUpdate ? (
+          <AlertSuccess
+            title="Sucesso!"
+            description="Sua saída foi registrada com sucesso. Agora você pode visualizá-la na página inicial."
+          />
+        ) : null}
       </form>
     </Form>
   );

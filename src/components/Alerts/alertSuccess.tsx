@@ -14,7 +14,7 @@ interface IMessage {
 export function AlertSuccess({title, description}: IMessage) {
   return (
     <Alert className="bg-green-600">
-      <RocketIcon className="h-4 w-4" />
+      <RocketIcon className="h-5 w-5" />
       <AlertTitle>{title}</AlertTitle>
       <AlertDescription>
         {description}

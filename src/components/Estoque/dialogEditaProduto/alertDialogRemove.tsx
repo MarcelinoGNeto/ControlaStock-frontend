@@ -32,7 +32,7 @@ import { TrashIcon } from "@radix-ui/react-icons";
           <AlertDialogHeader>
             <AlertDialogTitle>Você tem certeza que deseja remover o produto?</AlertDialogTitle>
             <AlertDialogDescription>
-              Ao clicar em "Sim" o produto será removido permanentemente do banco de dados.
+              Ao clicar em "Sim" o produto será removido permanentemente, mas poderá acrescentar novos.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

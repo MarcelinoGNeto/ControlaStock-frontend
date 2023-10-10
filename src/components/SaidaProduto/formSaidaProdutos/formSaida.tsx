@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { CaretSortIcon, CheckIcon, PlusIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -29,14 +29,19 @@ import { getSaidas } from "@/services/saidasAPI";
 import { useSaidaContext } from "@/contexts/saidaContext";
 import { Input } from "@/components/ui/input";
 import React from "react";
-import { getProdutoPorId, getProdutos } from "@/services/produtosAPI";
+import { getProdutos, updateProdutos } from "@/services/produtosAPI";
 import { useProductContext } from "@/contexts/productContext";
 import { useProdutosSaidaContext } from "@/contexts/useProdutosSaidaContext";
+import { DetalheProduto } from "./detalheProduto";
+import { AlertValidacaoQtd } from "@/components/SaidaProduto/formSaidaProdutos/alertValidacaoQtd";
+import { AlertValidacaoProduto } from "./alertValidacaoProduto";
+import { useAlertaProdutoContext } from "@/contexts/useAlertaProdutoContext";
+import { useAlertaQtdProdutoContext } from "@/contexts/useAlertaQtdProdutoContext"; 
 
 const FormSchema = z.object({
   _id: z.string(),
   nome: z.string().min(2, {
-    message: "O nome do produto deve conter mais de 2 letras.",
+    message: "Selecione um produto.",
   }),
   genero: z.string(),
   medida: z.string(),
@@ -55,6 +60,11 @@ export function FormSaida() {
   const { produtos, setProdutos } = useProductContext();
   const { setSaidas } = useSaidaContext();
   const { dataProdutosSaida, setDataProdutosSaida } = useProdutosSaidaContext();
+  const [selectProduto, setSelectProduto] = React.useState<z.infer<
+    typeof FormSchema
+  > | null>(null);
+  const { alertaProdutoSelecionado, setAlertaProdutoSelecionado } = useAlertaProdutoContext();
+  const { alertaQtdProdutoSelecionado, setAlertaQtdProdutoSelecionado } = useAlertaQtdProdutoContext();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -65,36 +75,68 @@ export function FormSaida() {
   });
 
   function validaRegistroSaida(data: z.infer<typeof FormSchema>) {
+    const quantidadeRequerida = data?.quantidade;
+    const quantidadeProdutoBD = selectProduto ? selectProduto?.quantidade : 0;
+
     const produtoExistente = dataProdutosSaida.find(
       (produto) => produto._id === data._id
     );
 
-    if (produtoExistente) {
-      console.log(`O produto ${produtoExistente.nome} já está na lista`);
-    } else {
-      setDataProdutosSaida((prevData) => [...prevData, data]);
-      dataProdutosSaida.push(data);
+    if (produtoExistente && produtoExistente !== undefined) {
+      setAlertaProdutoSelecionado(true);
+
+      return false;
+    }
+
+    if (quantidadeProdutoBD < quantidadeRequerida) {
+      setAlertaQtdProdutoSelecionado(true);
+      return false;
+    }
+
+    insereProduto(data);
+    atualizaQuantidadeProdutoBanco(data._id, quantidadeProdutoBD, quantidadeRequerida)
+  }
+
+  function insereProduto(data: z.infer<typeof FormSchema>) {
+    setDataProdutosSaida((prevData) => [...prevData, data]);
+    dataProdutosSaida.push(data);
+  }
+
+  async function updateProduto(id: string, data: object) {
+    try {
+      await updateProdutos(id, data);
+    }catch(error) {
+      console.error("Erro ao atualizar produto: ", error);
     }
   }
 
+  const atualizaQuantidadeProdutoBanco = (id: string, qtdBanco: number, qtdSolicitada: number) => {
+    const novaQtd = qtdBanco - qtdSolicitada;
+    const dataQtd = {
+      quantidade: novaQtd
+    }
+    updateProduto(id, dataQtd);
+  }
+
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    const resultadoValidacao = validaRegistroSaida(data);
 
-    validaRegistroSaida(data);
-    console.log("dataProdutosSaida: ", dataProdutosSaida);
+    console.log("resultadoValidacao: ", resultadoValidacao);
 
-    //Consulta de Produto original no banco
-    const produtoDaAPI = await getProdutoPorId(data._id);
-    console.log("Produto do banco: ", produtoDaAPI);
+    if (resultadoValidacao && resultadoValidacao !== undefined) {
+      validaRegistroSaida(data);
 
-    //const newSaida = await getSaidas();
-    // setSaidas(newSaida);
+      console.log("dataProdutosSaida: ", dataProdutosSaida);
+    }
 
+    setSelectProduto(null);
     form.reset();
   }
 
   React.useEffect(() => {
     fetchSaidas();
     fetchProdutos();
+    console.log("produtos: ", produtos);
   }, []);
 
   async function fetchSaidas() {
@@ -116,91 +158,121 @@ export function FormSaida() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mb-5">
-        <FormField
-          control={form.control}
-          name="nome"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Produtos</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className={cn(
-                        "w-[200px] justify-between",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value
-                        ? produtos.find(
-                            (produto) => produto.nome === field.value
-                          )?.nome
-                        : "Selecione..."}
-                      <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
-                  <Command>
-                    <CommandInput
-                      placeholder="Digite um produto"
-                      className="h-9"
-                    />
-                    <CommandEmpty>Não encontrado</CommandEmpty>
-                    <CommandGroup>
-                      {produtos.map((produto) => (
-                        <CommandItem
-                          value={produto.nome}
-                          key={produto._id}
-                          onSelect={() => {
-                            form.setValue("_id", produto._id);
-                            form.setValue("nome", produto.nome);
-                            form.setValue("genero", produto.genero);
-                            form.setValue("medida", produto.medida);
-                          }}
+    <div className="flex ">
+      <div className="flex-initial w-1/2 mr-5 ">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 mb-5"
+          >
+            <FormField
+              control={form.control}
+              name="nome"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Produtos</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-auto justify-between",
+                            !field.value && "text-muted-foreground"
+                          )}
+                          onClick={() => setAlertaProdutoSelecionado(false)}
                         >
-                          {produto.nome}
-                          <CheckIcon
-                            className={cn(
-                              "ml-auto h-4 w-4",
-                              produto.nome === field.value
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-              <FormField
-                control={form.control}
-                name="quantidade"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>QTD</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="quantidade"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Inserir</Button>
-      </form>
-    </Form>
+                          {field.value
+                            ? produtos.find(
+                                (produto) => produto.nome === field.value
+                              )?.nome
+                            : "Selecione..."}
+                          <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[200px] p-0">
+                      <Command>
+                        <CommandInput
+                          placeholder="Digite um produto"
+                          className="h-9"
+                        />
+                        <CommandEmpty>Não encontrado</CommandEmpty>
+                        <CommandGroup>
+                          {produtos.map((produto) => (
+                            <CommandItem
+                              value={produto.nome}
+                              key={produto._id}
+                              onSelect={() => {
+                                form.setValue("_id", produto._id);
+                                form.setValue("nome", produto.nome);
+                                form.setValue("genero", produto.genero);
+                                form.setValue("medida", produto.medida);
+                                console.log("id: ", produto._id);
+                                setSelectProduto(produto);
+                              }}
+                            >
+                              {produto.nome}
+                              <CheckIcon
+                                className={cn(
+                                  "ml-auto h-4 w-4",
+                                  produto.nome === field.value
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  {alertaProdutoSelecionado ? <AlertValidacaoProduto /> : null}
+                  <FormMessage />
+                  <FormField
+                    control={form.control}
+                    name="quantidade"
+                    render={({ field }) => (
+                      <>
+                        <FormItem>
+                          <FormLabel>Quantidade desejada</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="quantidade"
+                              {...field}
+                              onClick={() => setAlertaQtdProdutoSelecionado(false)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                        {alertaQtdProdutoSelecionado ? <AlertValidacaoQtd /> : null}
+                      </>
+                    )}
+                  />
+                </FormItem>
+              )}
+            />
+            <Button type="submit">
+              Inserir
+              <PlusIcon className="ml-2 h-5 w-5" />
+            </Button>
+          </form>
+        </Form>
+      </div>
+
+      <div className="w-full mb-7">
+        {selectProduto && (
+          <DetalheProduto
+            _id={selectProduto._id}
+            nome={selectProduto.nome}
+            quantidade={selectProduto.quantidade}
+            medida={selectProduto.medida}
+            genero={selectProduto.genero}
+          />
+        )}
+      </div>
+    </div>
   );
 }

@@ -1,6 +1,7 @@
 import { FormSaida } from "@/components/SaidaProduto/formSaidaProdutos/formSaida";
 import { ProdutosSaidaTable } from "./formSaidaProdutos/produtosSaidaTable";
 import { SelecionaDestinatario } from "./formSaidaProdutos/selecionaDestinatario";
+import { Separator } from "../ui/separator";
 
 export function RegistroSaidas() {
 
@@ -10,6 +11,7 @@ export function RegistroSaidas() {
         <div className="font-semibold leading-none tracking-tight">Registar saída</div>
         <div className="text-sm text-muted-foreground">
           Escolha um destinatário e os produtos que farão parte dessa saída
+        <Separator className="my-4" />
         </div>
       </div>
       <div className="p-6 pt-0">

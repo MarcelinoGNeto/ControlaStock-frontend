@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CaretSortIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { CaretSortIcon } from "@radix-ui/react-icons";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -15,12 +15,6 @@ import {
 
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Table,
   TableBody,
   TableCell,
@@ -28,8 +22,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteProdutos } from "@/services/produtosAPI";
 import { useProdutosSaidaContext } from "@/contexts/useProdutosSaidaContext";
+import { AlertDialogRemove } from "@/components/Estoque/dialogEditaProduto/alertDialogRemove";
+import { getProdutoPorId, updateProdutos } from "@/services/produtosAPI";
 
 export type Item = {
   _id: string;
@@ -47,7 +42,7 @@ export function ProdutosSaidaTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const { dataProdutosSaida } = useProdutosSaidaContext();
+  const { dataProdutosSaida, setDataProdutosSaida } = useProdutosSaidaContext();
 
   const columns: ColumnDef<Item>[] = [
     {
@@ -136,35 +131,66 @@ export function ProdutosSaidaTable() {
       cell: ({ row }) => {
         const produto = row.original;
         const idProduto = produto._id;
+        const produtoQtd = produto.quantidade;
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Abrir menu</span>
-                <DotsHorizontalIcon className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {/* <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-                <DialogEditButton /> */}
-              <DropdownMenuItem onClick={() => removeProduto(idProduto)}>
-                Remover produto
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <AlertDialogRemove
+            removeProduct={() => removeProduto(idProduto, produtoQtd)}
+          />
         );
       },
     },
   ];
 
   React.useEffect(() => {
-    console.log("dataProdutosSaida: ", dataProdutosSaida);
-  }, []);
+    dataProdutosSaida;
+  }, [dataProdutosSaida]);
 
-  async function removeProduto(id: string) {
-    await deleteProdutos(id);
+  async function removeProduto(idProduto: string, produtoQtd: number) {
+    for (let i = 0; i < dataProdutosSaida.length; i++) {
+      if (dataProdutosSaida[i]._id === idProduto) {
+        dataProdutosSaida.splice(i, 1);
+        break;
+      }
+    }
+
+    setDataProdutosSaida([...dataProdutosSaida]);
+
+    const produtoById = await getProdutoPorId(idProduto);
+
+    atualizaQuantidadeProdutoBanco(
+      idProduto,
+      produtoById.quantidade,
+      produtoQtd
+    );
+    console.log(
+      "id: ",
+      idProduto,
+      " quantidadeProdutoBD: ",
+      produtoById.quantidade,
+      " produtoQtd: ",
+      produtoQtd
+    );
+  }
+
+  const atualizaQuantidadeProdutoBanco = (
+    id: string,
+    qtdBanco: number,
+    qtdSolicitada: number
+  ) => {
+    const novaQtd = qtdBanco + qtdSolicitada;
+    const dataQtd = {
+      quantidade: novaQtd,
+    };
+    updateProduto(id, dataQtd);
+  };
+
+  async function updateProduto(id: string, data: object) {
+    try {
+      await updateProdutos(id, data);
+    } catch (error) {
+      console.error("Erro ao atualizar produto: ", error);
+    }
   }
 
   const table = useReactTable({
@@ -238,8 +264,8 @@ export function ProdutosSaidaTable() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2">
-        <div className="space-x-2">
+      <div className="flex items-center justify-end">
+        <div className="space-y-2 space-x-2">
           <Button
             variant="outline"
             size="sm"

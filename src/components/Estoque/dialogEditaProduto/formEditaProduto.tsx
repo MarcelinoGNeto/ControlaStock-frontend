@@ -28,7 +28,7 @@ interface IFormProdutoProps {
   refreshModal: any;
 }
 
-interface IProduto {
+export interface IProduto {
   nome: string;
   genero: string;
   medida: string;
