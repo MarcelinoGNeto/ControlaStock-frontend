@@ -40,7 +40,6 @@ export function FormLogin() {
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
       const response = await postLogin(data);
-      console.log("response: ", response);
 
       if (response) {
         navigate("/home");
