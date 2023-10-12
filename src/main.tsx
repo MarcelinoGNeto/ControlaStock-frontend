@@ -2,11 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { ProductProvider } from "./contexts/productContext.js";
-import AppRouter from "./routes.tsx";
+import AppRouter from "./routes/routes.tsx";
 import { SaidaProvider } from "./contexts/saidaContext.tsx";
 import { ProdutosSaidaProvider } from "./contexts/useProdutosSaidaContext.tsx";
 import { AlertaProdutoProvider } from "./contexts/useAlertaProdutoContext.tsx";
 import { AlertaQtdProdutoProvider } from "./contexts/useAlertaQtdProdutoContext.tsx";
+import { LogInOutProvider } from "./contexts/useLoginLogoutContext.tsx";
+import { AuthProvider } from "./contexts/useAuthContext.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -15,7 +17,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <ProdutosSaidaProvider>
           <AlertaProdutoProvider>
             <AlertaQtdProdutoProvider>
-              <AppRouter />
+              <LogInOutProvider>
+                <AuthProvider>
+                  <AppRouter />
+                </AuthProvider>
+              </LogInOutProvider>
             </AlertaQtdProdutoProvider>
           </AlertaProdutoProvider>
         </ProdutosSaidaProvider>

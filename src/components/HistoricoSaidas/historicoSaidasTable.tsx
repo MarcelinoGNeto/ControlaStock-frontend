@@ -39,6 +39,7 @@ import moment from "moment";
 import "moment/locale/pt-br";
 import { saidasPDF } from "../Reports/saidaPDF";
 import { AlertDialogRemove } from "../Alerts/alertDialogRemove";
+import { useLoginLogoutContext } from "@/contexts/useLoginLogoutContext";
 
 export type Item = {
   _id: string;
@@ -57,6 +58,7 @@ export function HistoricoSaidasTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const { saidas, setSaidas } = useSaidaContext();
+  const { setLogInOut } = useLoginLogoutContext()
 
   const columns: ColumnDef<Item>[] = [
     {
@@ -121,6 +123,7 @@ export function HistoricoSaidasTable() {
 
   React.useEffect(() => {
     fetchSaidas();
+    setLogInOut(true);
   }, []);
 
   async function fetchSaidas() {

@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const produtosAPI = axios.create({baseURL: "http://localhost:3000"})
+const baseURL = import.meta.env.VITE_REACT_APP_BASE_URL_SERVER;
+const produtosAPI = axios.create({ baseURL })
 
 async function getProdutos() {
   try {

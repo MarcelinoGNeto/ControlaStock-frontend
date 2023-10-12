@@ -1,13 +1,16 @@
 import { Separator } from "../ui/separator";
 import { NavMenu } from "./navigationMenu/navigationMenu";
 import { SuportButton } from "./suportButton/suportButton";
+import { useAuthContext } from "@/contexts/useAuthContext";
 
 export function Menu() {
+  const { autenticado } = useAuthContext();
+
   return (
     <>
       <div className="px-6 py-3 flex items-center justify-between border-b">
         <h1 className="text-xl font-bold">
-          <NavMenu />
+          {autenticado ? <NavMenu /> : null}
         </h1>
 
         <div className="flex items-center gap-3">
