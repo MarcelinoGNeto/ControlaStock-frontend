@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const saidasAPI = axios.create({baseURL: "http://localhost:3000"})
+//const baseURL = import.meta.env.VITE_REACT_APP_BASE_URL_SERVER;
+const baseURL = import.meta.env.VITE_REACT_APP_BASE_URL_SERVER_PROD;
+const saidasAPI = axios.create({ baseURL });
 
 async function getSaidas() {
   try {

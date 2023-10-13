@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import { cn } from "@/lib/utils";
@@ -9,13 +9,31 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { logout, usuarioAutenticado } from "@/services/loginAPI";
+import { useLoginLogoutContext } from "@/contexts/useLoginLogoutContext";
+import { useAuthContext } from "@/contexts/useAuthContext";
 
 export function NavMenu() {
+  const { logInOut, setLogInOut } = useLoginLogoutContext();
+  const { setAutenticado } = useAuthContext()
+
+  const handleLogoutClick = () => {
+    logout();
+    setLogInOut(false);
+    setAutenticado(false);
+  };
+
+  useEffect(() => {
+    if (usuarioAutenticado()) {
+      setLogInOut(true);
+    }
+  }, []);
+
   return (
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <Link to="/" className={navigationMenuTriggerStyle()}>
+          <Link to="/home" className={navigationMenuTriggerStyle()}>
             <div className="text-lg font-bold">HOME</div>
           </Link>
         </NavigationMenuItem>
@@ -29,6 +47,17 @@ export function NavMenu() {
             SAÍDA
           </Link>
         </NavigationMenuItem>
+        {logInOut ? (
+          <NavigationMenuItem>
+            <Link
+              to="*"
+              className={navigationMenuTriggerStyle()}
+              onClick={handleLogoutClick}
+            >
+              LOGOUT
+            </Link>
+          </NavigationMenuItem>
+        ) : null}
       </NavigationMenuList>
     </NavigationMenu>
   );
