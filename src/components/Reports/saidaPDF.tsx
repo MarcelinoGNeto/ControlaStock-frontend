@@ -10,7 +10,7 @@ export function saidasPDF(saidas: {
   produtos: any;
 }) {
 
-  (pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
+  (pdfMake as any).vfs = pdfFonts && pdfFonts.pdfMake ? pdfFonts.pdfMake.vfs : globalThis.pdfMake.vfs;
 
   const reportTitle = [
     {
