@@ -1,6 +1,7 @@
 import moment from "moment";
-import pdfMake from "pdfmake/build/pdfmake";
-import * as pdfFonts from "pdfmake/build/vfs_fonts";
+import * as pdfMake from "pdfmake/build/pdfmake";
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+
 
 export function saidasPDF(saidas: {
   _id?: string;
@@ -8,7 +9,8 @@ export function saidasPDF(saidas: {
   criadoEm?: Date;
   produtos: any;
 }) {
-  pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
+  (pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
 
   const reportTitle = [
     {
