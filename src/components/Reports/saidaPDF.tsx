@@ -1,5 +1,4 @@
 import moment from "moment";
-import 'moment/locale/pt-br';
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 
