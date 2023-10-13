@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_REACT_APP_BASE_URL_SERVER;
+//const baseURL = import.meta.env.VITE_REACT_APP_BASE_URL_SERVER;
+const baseURL = import.meta.env.VITE_REACT_APP_BASE_URL_SERVER_PROD;
 const loginAPI = axios.create({ baseURL })
 
 async function postLogin(dados: object,) {
